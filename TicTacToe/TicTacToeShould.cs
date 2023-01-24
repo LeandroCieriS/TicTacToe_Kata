@@ -47,7 +47,7 @@ namespace TicTacToe
         }
 
         [Test]
-        public void Declare_a_winner_if_there_is_a_row_with_the_same_player()
+        public void Declare_a_winner_if_first_row_is_full_with_the_same_player()
         {
             var game = new Game();
             game.Play(Player.X, new Position(0, 0));
@@ -55,7 +55,9 @@ namespace TicTacToe
             game.Play(Player.X, new Position(0, 1));
             game.Play(Player.O, new Position(1, 1));
 
-            var play = () => game.Play(Player.X, new Position(0, 2));
+            game.Play(Player.X, new Position(0, 2));
+
+            game.GetWinner().Should().Be(Player.X);
         }
     }
 
@@ -68,7 +70,7 @@ namespace TicTacToe
         {
             CheckTurns(player);
             _board.SetPosition(player, position);
-
+            GetWinner();
         }
 
         private void CheckTurns(Player player)
@@ -77,20 +79,32 @@ namespace TicTacToe
                 throw new WrongTurnException();
             _lastPlayer = player;
         }
+
+        public Player? GetWinner()
+        {
+            return _board.CheckWinner();
+        }
     }
 
     internal class Board
     {
-        private readonly string[,] _cells = new string[3, 3];
+        private readonly Player?[,] _cells = new Player?[3, 3];
 
         public void SetPosition(Player player, Position position)
         {
             if (CellIsOccupied(position))
                 throw new PlayedPositionIsNotEmptyException();
-            _cells[position.X, position.Y] = player.ToString();
+            _cells[position.X, position.Y] = player;
         }
 
-        private bool CellIsOccupied(Position position) => !string.IsNullOrEmpty(_cells[position.X, position.Y]);
+        private bool CellIsOccupied(Position position) => _cells[position.X, position.Y] != null;
+
+        public Player? CheckWinner()
+        {
+            if (_cells[0, 0] == _cells[0, 1] && _cells[0, 1] == _cells[0, 2])
+                return _cells[0, 0];
+            return null;
+        }
     }
 
     public class Position
