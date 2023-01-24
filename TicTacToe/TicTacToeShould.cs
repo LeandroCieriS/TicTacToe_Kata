@@ -57,7 +57,7 @@ namespace TicTacToe
 
             game.Play(Player.X, new Position(0, 2));
 
-            game.GetWinner().Should().Be(Player.X);
+            game.CheckWinner().Should().Be(Player.X);
         }
 
         [Test]
@@ -73,7 +73,7 @@ namespace TicTacToe
 
             game.Play(Player.O, new Position(1, 2));
 
-            game.GetWinner().Should().Be(Player.O);
+            game.CheckWinner().Should().Be(Player.O);
         }
     }
 
@@ -86,7 +86,7 @@ namespace TicTacToe
         {
             CheckTurns(player);
             _board.SetPosition(player, position);
-            GetWinner();
+            CheckWinner();
         }
 
         private void CheckTurns(Player player)
@@ -96,9 +96,9 @@ namespace TicTacToe
             _lastPlayer = player;
         }
 
-        public Player? GetWinner()
+        public Player? CheckWinner()
         {
-            return _board.CheckWinner();
+            return _board.GetWinner();
         }
     }
 
@@ -115,10 +115,12 @@ namespace TicTacToe
 
         private bool CellIsOccupied(Position position) => _cells[position.X, position.Y] != null;
 
-        public Player? CheckWinner()
+        public Player? GetWinner()
         {
             if (_cells[0, 0] == _cells[0, 1] && _cells[0, 1] == _cells[0, 2])
                 return _cells[0, 0];
+            if (_cells[1, 0] == _cells[1, 1] && _cells[1, 1] == _cells[1, 2])
+                return _cells[1, 0];
             return null;
         }
     }
