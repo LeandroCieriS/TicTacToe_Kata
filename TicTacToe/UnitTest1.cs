@@ -39,10 +39,12 @@ namespace TicTacToe
 
     public class Game
     {
+        private char lastPlayer = 'O';
         public void Play(char player)
         {
-            if (player == 'O')
+            if (lastPlayer == player)
                 throw new WrongTurnException();
+            lastPlayer = player;
         }
     }
 
