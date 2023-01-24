@@ -10,7 +10,7 @@ namespace TicTacToe
         {
             var game = new Game();
 
-            var play = () => game.Play('O');
+            var play = () => game.Play(Player.O);
 
             play.Should().Throw<WrongTurnException>();
         }
@@ -20,7 +20,7 @@ namespace TicTacToe
         {
             var game = new Game();
 
-            var play = () => game.Play('X');
+            var play = () => game.Play(Player.X);
 
             play.Should().NotThrow<WrongTurnException>();
         }
@@ -29,22 +29,28 @@ namespace TicTacToe
         public void alternate_turns_between_player_X_and_O()
         {
             var game = new Game();
-            game.Play('X');
+            game.Play(Player.X);
 
-            var play = () => game.Play('X');
+            var play = () => game.Play(Player.X);
 
             play.Should().Throw<WrongTurnException>();
         }
     }
 
+    public enum Player
+    {
+        X,
+        O
+    }
+
     public class Game
     {
-        private char lastPlayer = 'O';
-        public void Play(char player)
+        private Player _lastPlayer = Player.O;
+        public void Play(Player player)
         {
-            if (lastPlayer == player)
+            if (_lastPlayer == player)
                 throw new WrongTurnException();
-            lastPlayer = player;
+            _lastPlayer = player;
         }
     }
 
