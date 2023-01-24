@@ -169,6 +169,7 @@ namespace TicTacToe
 
         private readonly Position[] firstColumn = { Position.TopLeft, Position.MidLeft, Position.BottomLeft };
         private readonly Position[] secondColumn = { Position.TopCenter, Position.MidCenter, Position.BottomCenter };
+        private readonly Position[] thirdColumn = { Position.TopRight, Position.MidRight, Position.BottomRight };
 
         public void SetPosition(Player player, Position position)
         {
@@ -195,6 +196,9 @@ namespace TicTacToe
 
             if (LineIsFull(secondColumn) && LineIsSamePlayer(secondColumn))
                 return _cells[Position.TopCenter];
+
+            if (LineIsFull(thirdColumn) && LineIsSamePlayer(thirdColumn))
+                return _cells[Position.TopRight];
 
             return null;
         }
