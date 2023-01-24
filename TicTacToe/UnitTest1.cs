@@ -30,7 +30,8 @@ namespace TicTacToe
     {
         public void Play(char player)
         {
-            throw new WrongTurnException();
+            if (player == 'O')
+                throw new WrongTurnException();
         }
     }
 
