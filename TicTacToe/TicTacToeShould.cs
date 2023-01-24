@@ -90,6 +90,20 @@ namespace TicTacToe
 
             game.Winner.Should().Be(Player.O);
         }
+
+        [Test]
+        public void Declare_a_winner_if_first_column_is_full_with_the_same_player()
+        {
+            var game = new Game();
+            game.Play(Player.X, Position.TopLeft);
+            game.Play(Player.O, Position.TopRight);
+            game.Play(Player.X, Position.BottomLeft);
+            game.Play(Player.O, Position.BottomCenter);
+
+            game.Play(Player.X, Position.MidLeft);
+
+            game.Winner.Should().Be(Player.X);
+        }
     }
 
     public class Game
