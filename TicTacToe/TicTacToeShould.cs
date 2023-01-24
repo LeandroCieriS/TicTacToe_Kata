@@ -137,6 +137,8 @@ namespace TicTacToe
         private readonly Position[] secondRow = { Position.MidLeft, Position.MidCenter, Position.MidRight };
         private readonly Position[] thirdRow = { Position.BottomLeft, Position.BottomCenter, Position.BottomRight };
 
+        private readonly Position[] firstColumn = { Position.TopLeft, Position.MidLeft, Position.BottomLeft };
+
         public void SetPosition(Player player, Position position)
         {
             if (CellIsOccupied(position))
@@ -148,23 +150,26 @@ namespace TicTacToe
 
         public Player? GetWinner()
         {
-            if (RowIsFull(firstRow) && RowIsSamePlayer(firstRow))
+            if (LineIsFull(firstRow) && LineIsSamePlayer(firstRow))
                 return _cells[Position.TopLeft];
 
-            if (RowIsFull(secondRow) && RowIsSamePlayer(secondRow))
+            if (LineIsFull(secondRow) && LineIsSamePlayer(secondRow))
                 return _cells[Position.MidLeft];
 
-            if (RowIsFull(thirdRow) && RowIsSamePlayer(thirdRow))
+            if (LineIsFull(thirdRow) && LineIsSamePlayer(thirdRow))
                 return _cells[Position.BottomLeft];
+
+            if (LineIsFull(firstColumn) && LineIsSamePlayer(firstColumn))
+                return _cells[Position.TopLeft];
 
             return null;
         }
 
-        private bool RowIsSamePlayer(IReadOnlyList<Position> rowPositions) =>
+        private bool LineIsSamePlayer(IReadOnlyList<Position> rowPositions) =>
             _cells[rowPositions[0]] == _cells[rowPositions[1]] &&
             _cells[rowPositions[1]] == _cells[rowPositions[2]];
 
-        private bool RowIsFull(IReadOnlyList<Position> rowPositions) =>
+        private bool LineIsFull(IReadOnlyList<Position> rowPositions) =>
             _cells.ContainsKey(rowPositions[0]) && _cells.ContainsKey(rowPositions[1]) && _cells.ContainsKey(rowPositions[2]);
     }
 
