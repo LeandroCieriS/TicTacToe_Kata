@@ -147,6 +147,20 @@ namespace TicTacToe
 
             game.Winner.Should().Be(Player.X);
         }
+
+        [Test]
+        public void Declare_a_winner_if_second_diagonal_is_full_with_the_same_player()
+        {
+            var game = new Game();
+            game.Play(Player.X, Position.TopRight);
+            game.Play(Player.O, Position.TopLeft);
+            game.Play(Player.X, Position.MidCenter);
+            game.Play(Player.O, Position.BottomRight);
+
+            game.Play(Player.X, Position.BottomLeft);
+
+            game.Winner.Should().Be(Player.X);
+        }
     }
 
     public class Game
