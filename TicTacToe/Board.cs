@@ -35,6 +35,11 @@ internal class Board
                _cells.ContainsKey(rowPositions[2]);
     }
 
+    public bool IsFull()
+    {
+        return _cells.Count == 9;
+    }
+
     private static List<Position[]> InitializeBoard()
     {
         Position[] firstRow = { Position.TopLeft, Position.TopCenter, Position.TopRight };

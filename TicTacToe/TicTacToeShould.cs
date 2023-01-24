@@ -161,4 +161,42 @@ public class TicTacToeShould
 
         game.Winner.Should().Be(Player.X);
     }
+
+    [Test]
+    public void Declare_game_over_if_board_is_full()
+    {
+        var game = new Game();
+        game.Play(Player.X, Position.TopRight);
+        game.Play(Player.O, Position.TopLeft);
+        game.Play(Player.X, Position.TopCenter);
+        game.Play(Player.O, Position.MidRight);
+        game.Play(Player.X, Position.MidLeft);
+        game.Play(Player.O, Position.MidCenter);
+        game.Play(Player.X, Position.BottomRight);
+        game.Play(Player.O, Position.BottomCenter);
+
+        game.Play(Player.X, Position.BottomLeft);
+
+        game.Winner.Should().BeNull();
+        game.IsOver.Should().BeTrue();
+    }
+
+    [Test]
+    public void Not_let_play_if_board_is_full()
+    {
+        var game = new Game();
+        game.Play(Player.X, Position.TopRight);
+        game.Play(Player.O, Position.TopLeft);
+        game.Play(Player.X, Position.TopCenter);
+        game.Play(Player.O, Position.MidRight);
+        game.Play(Player.X, Position.MidLeft);
+        game.Play(Player.O, Position.MidCenter);
+        game.Play(Player.X, Position.BottomRight);
+        game.Play(Player.O, Position.BottomCenter);
+        game.Play(Player.X, Position.BottomLeft);
+
+        var play = () => game.Play(Player.X, Position.BottomLeft);
+
+        play.Should().Throw<GameIsOverException>();
+    }
 }
