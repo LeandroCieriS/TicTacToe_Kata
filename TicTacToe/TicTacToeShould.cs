@@ -28,7 +28,7 @@ namespace TicTacToe
         public void alternate_turns_between_player_X_and_O()
         {
             var game = new Game();
-            game.Play(Player.X, 0, 0);
+            game.Play(Player.X, 0, 1);
 
             var play = () => game.Play(Player.X, 0, 0);
 
@@ -41,7 +41,7 @@ namespace TicTacToe
             var game = new Game();
             game.Play(Player.X, 0, 0);
 
-            var play = () => game.Play(Player.X, 0, 0);
+            var play = () => game.Play(Player.O, 0, 0);
 
             play.Should().Throw<PlayedPositionIsNotEmptyException>();
         }
@@ -50,11 +50,26 @@ namespace TicTacToe
     public class Game
     {
         private Player _lastPlayer = Player.O;
+        private Board _board = new();
+
         public void Play(Player player, int x, int y)
         {
             if (_lastPlayer == player)
                 throw new WrongTurnException();
+            _board.SetPosition(x, y, player);
             _lastPlayer = player;
+        }
+    }
+
+    internal class Board
+    {
+        private readonly string[,] _cells = new string[3, 3];
+
+        public void SetPosition(int x, int y, Player player)
+        {
+            if (!string.IsNullOrEmpty(_cells[x, y]))
+                throw new PlayedPositionIsNotEmptyException();
+            _cells[x, y] = player.ToString();
         }
     }
 
