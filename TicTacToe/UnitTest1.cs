@@ -24,6 +24,17 @@ namespace TicTacToe
 
             play.Should().NotThrow<WrongTurnException>();
         }
+
+        [Test]
+        public void alternate_turns_between_player_X_and_O()
+        {
+            var game = new Game();
+            game.Play('X');
+
+            var play = () => game.Play('X');
+
+            play.Should().Throw<WrongTurnException>();
+        }
     }
 
     public class Game
@@ -35,7 +46,5 @@ namespace TicTacToe
         }
     }
 
-    public class WrongTurnException : Exception
-    {
-    }
+    public class WrongTurnException : Exception { }
 }
