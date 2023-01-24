@@ -1,5 +1,4 @@
 using FluentAssertions;
-using System.Numerics;
 
 namespace TicTacToe
 {
@@ -141,13 +140,13 @@ namespace TicTacToe
         private Player _lastPlayer = Player.O;
         private readonly Board _board = new();
 
-        public Player? Winner => _board.GetWinner();
+        public Player? Winner => _board.HasAWinner() ? _lastPlayer : null;
 
         public void Play(Player player, Position position)
         {
             CheckTurns(player);
             _board.SetPosition(player, position);
-            _board.GetWinner();
+            _board.HasAWinner();
         }
 
         private void CheckTurns(Player player)
@@ -162,14 +161,7 @@ namespace TicTacToe
     internal class Board
     {
         private readonly Dictionary<Position, Player> _cells = new();
-
-        private readonly Position[] firstRow = { Position.TopLeft, Position.TopCenter, Position.TopRight };
-        private readonly Position[] secondRow = { Position.MidLeft, Position.MidCenter, Position.MidRight };
-        private readonly Position[] thirdRow = { Position.BottomLeft, Position.BottomCenter, Position.BottomRight };
-
-        private readonly Position[] firstColumn = { Position.TopLeft, Position.MidLeft, Position.BottomLeft };
-        private readonly Position[] secondColumn = { Position.TopCenter, Position.MidCenter, Position.BottomCenter };
-        private readonly Position[] thirdColumn = { Position.TopRight, Position.MidRight, Position.BottomRight };
+        private readonly List<Position[]> _viableTicTacToes = InitializeBoard();
 
         public void SetPosition(Player player, Position position)
         {
@@ -178,37 +170,49 @@ namespace TicTacToe
             _cells[position] = player;
         }
 
-        private bool CellIsOccupied(Position position) => _cells.ContainsKey(position);
-
-        public Player? GetWinner()
+        private bool CellIsOccupied(Position position)
         {
-            if (LineIsFull(firstRow) && LineIsSamePlayer(firstRow))
-                return _cells[Position.TopLeft];
-
-            if (LineIsFull(secondRow) && LineIsSamePlayer(secondRow))
-                return _cells[Position.MidLeft];
-
-            if (LineIsFull(thirdRow) && LineIsSamePlayer(thirdRow))
-                return _cells[Position.BottomLeft];
-
-            if (LineIsFull(firstColumn) && LineIsSamePlayer(firstColumn))
-                return _cells[Position.TopLeft];
-
-            if (LineIsFull(secondColumn) && LineIsSamePlayer(secondColumn))
-                return _cells[Position.TopCenter];
-
-            if (LineIsFull(thirdColumn) && LineIsSamePlayer(thirdColumn))
-                return _cells[Position.TopRight];
-
-            return null;
+            return _cells.ContainsKey(position);
         }
 
-        private bool LineIsSamePlayer(IReadOnlyList<Position> rowPositions) =>
-            _cells[rowPositions[0]] == _cells[rowPositions[1]] &&
-            _cells[rowPositions[1]] == _cells[rowPositions[2]];
+        public bool HasAWinner()
+        {
+            return _viableTicTacToes.Any(LineIsSamePlayer);
+        }
 
-        private bool LineIsFull(IReadOnlyList<Position> rowPositions) =>
-            _cells.ContainsKey(rowPositions[0]) && _cells.ContainsKey(rowPositions[1]) && _cells.ContainsKey(rowPositions[2]);
+        private bool LineIsSamePlayer(IReadOnlyList<Position> linePositions)
+        {
+            return LineIsFull(linePositions) &&
+                   _cells[linePositions[0]] == _cells[linePositions[1]] &&
+                   _cells[linePositions[1]] == _cells[linePositions[2]];
+        }
+
+        private bool LineIsFull(IReadOnlyList<Position> rowPositions)
+        {
+            return _cells.ContainsKey(rowPositions[0]) && _cells.ContainsKey(rowPositions[1]) &&
+                   _cells.ContainsKey(rowPositions[2]);
+        }
+
+        private static List<Position[]> InitializeBoard()
+        {
+            Position[] firstRow = { Position.TopLeft, Position.TopCenter, Position.TopRight };
+            Position[] secondRow = { Position.MidLeft, Position.MidCenter, Position.MidRight };
+            Position[] thirdRow = { Position.BottomLeft, Position.BottomCenter, Position.BottomRight };
+
+            Position[] firstColumn = { Position.TopLeft, Position.MidLeft, Position.BottomLeft };
+            Position[] secondColumn = { Position.TopCenter, Position.MidCenter, Position.BottomCenter };
+            Position[] thirdColumn = { Position.TopRight, Position.MidRight, Position.BottomRight };
+
+            return new List<Position[]>
+            {
+                firstRow,
+                secondRow,
+                thirdRow,
+                firstColumn,
+                secondColumn,
+                thirdColumn
+            };
+        }
     }
 
     public enum Position
