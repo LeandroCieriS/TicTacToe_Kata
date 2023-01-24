@@ -1,4 +1,5 @@
 using FluentAssertions;
+using System.Numerics;
 
 namespace TicTacToe
 {
@@ -9,7 +10,7 @@ namespace TicTacToe
         {
             var game = new Game();
 
-            var play = () => game.Play(Player.O, new Position(0, 0));
+            var play = () => game.Play(Player.O, Position.TopLeft);
 
             play.Should().Throw<WrongTurnException>();
         }
@@ -19,7 +20,7 @@ namespace TicTacToe
         {
             var game = new Game();
 
-            var play = () => game.Play(Player.X, new Position(0, 0));
+            var play = () => game.Play(Player.X, Position.TopLeft);
 
             play.Should().NotThrow<WrongTurnException>();
         }
@@ -28,9 +29,9 @@ namespace TicTacToe
         public void Alternate_turns_between_player_X_and_O()
         {
             var game = new Game();
-            game.Play(Player.X, new Position(0, 1));
+            game.Play(Player.X, Position.MidRight);
 
-            var play = () => game.Play(Player.X, new Position(0, 0));
+            var play = () => game.Play(Player.X, Position.TopLeft);
 
             play.Should().Throw<WrongTurnException>();
         }
@@ -39,9 +40,9 @@ namespace TicTacToe
         public void Not_be_able_to_play_same_position_twice()
         {
             var game = new Game();
-            game.Play(Player.X, new Position(0, 0));
+            game.Play(Player.X, Position.TopLeft);
 
-            var play = () => game.Play(Player.O, new Position(0, 0));
+            var play = () => game.Play(Player.O, Position.TopLeft);
 
             play.Should().Throw<PlayedPositionIsNotEmptyException>();
         }
@@ -50,44 +51,44 @@ namespace TicTacToe
         public void Declare_a_winner_if_first_row_is_full_with_the_same_player()
         {
             var game = new Game();
-            game.Play(Player.X, new Position(0, 0));
-            game.Play(Player.O, new Position(1, 0));
-            game.Play(Player.X, new Position(0, 1));
-            game.Play(Player.O, new Position(1, 1));
+            game.Play(Player.X, Position.TopLeft);
+            game.Play(Player.O, Position.MidLeft);
+            game.Play(Player.X, Position.TopCenter);
+            game.Play(Player.O, Position.MidCenter);
 
-            game.Play(Player.X, new Position(0, 2));
+            game.Play(Player.X, Position.TopRight);
 
-            game.CheckWinner().Should().Be(Player.X);
+            game.Winner.Should().Be(Player.X);
         }
 
         [Test]
         public void Declare_a_winner_if_second_row_is_full_with_the_same_player()
         {
             var game = new Game();
-            game.Play(Player.X, new Position(0, 0));
-            game.Play(Player.O, new Position(1, 0));
-            game.Play(Player.X, new Position(0, 1));
-            game.Play(Player.O, new Position(1, 1));
-            game.Play(Player.X, new Position(2, 2));
+            game.Play(Player.X, Position.TopLeft);
+            game.Play(Player.O, Position.MidLeft);
+            game.Play(Player.X, Position.TopCenter);
+            game.Play(Player.O, Position.MidCenter);
+            game.Play(Player.X, Position.BottomRight);
 
-            game.Play(Player.O, new Position(1, 2));
+            game.Play(Player.O, Position.MidRight);
 
-            game.CheckWinner().Should().Be(Player.O);
+            game.Winner.Should().Be(Player.O);
         }
 
         [Test]
         public void Declare_a_winner_if_third_row_is_full_with_the_same_player()
         {
             var game = new Game();
-            game.Play(Player.X, new Position(0, 0));
-            game.Play(Player.O, new Position(2, 0));
-            game.Play(Player.X, new Position(0, 1));
-            game.Play(Player.O, new Position(2, 1));
-            game.Play(Player.X, new Position(1, 2));
+            game.Play(Player.X, Position.TopLeft);
+            game.Play(Player.O, Position.BottomLeft);
+            game.Play(Player.X, Position.TopCenter);
+            game.Play(Player.O, Position.BottomCenter);
+            game.Play(Player.X, Position.MidRight);
 
-            game.Play(Player.O, new Position(2, 2));
+            game.Play(Player.O, Position.BottomRight);
 
-            game.CheckWinner().Should().Be(Player.O);
+            game.Winner.Should().Be(Player.O);
         }
     }
 
@@ -96,11 +97,13 @@ namespace TicTacToe
         private Player _lastPlayer = Player.O;
         private readonly Board _board = new();
 
+        public Player? Winner => _board.GetWinner();
+
         public void Play(Player player, Position position)
         {
             CheckTurns(player);
             _board.SetPosition(player, position);
-            CheckWinner();
+            _board.GetWinner();
         }
 
         private void CheckTurns(Player player)
@@ -110,47 +113,60 @@ namespace TicTacToe
             _lastPlayer = player;
         }
 
-        public Player? CheckWinner()
-        {
-            return _board.GetWinner();
-        }
     }
 
     internal class Board
     {
-        private readonly Player?[,] _cells = new Player?[3, 3];
+        private readonly Dictionary<Position, Player> _cells = new();
+
+        private readonly Position[] firstRow = { Position.TopLeft, Position.TopCenter, Position.TopRight };
+        private readonly Position[] secondRow = { Position.MidLeft, Position.MidCenter, Position.MidRight };
+        private readonly Position[] thirdRow = { Position.BottomLeft, Position.BottomCenter, Position.BottomRight };
 
         public void SetPosition(Player player, Position position)
         {
             if (CellIsOccupied(position))
                 throw new PlayedPositionIsNotEmptyException();
-            _cells[position.X, position.Y] = player;
+            _cells[position] = player;
         }
 
-        private bool CellIsOccupied(Position position) => _cells[position.X, position.Y] != null;
+        private bool CellIsOccupied(Position position) => _cells.ContainsKey(position);
 
         public Player? GetWinner()
         {
-            if (_cells[0, 0] == _cells[0, 1] && _cells[0, 1] == _cells[0, 2])
-                return _cells[0, 0];
-            if (_cells[1, 0] == _cells[1, 1] && _cells[1, 1] == _cells[1, 2])
-                return _cells[1, 0];
-            if (_cells[2, 0] == _cells[2, 1] && _cells[2, 1] == _cells[2, 2])
-                return _cells[2, 0];
+            if (RowIsFull(firstRow) && RowIsSamePlayer(firstRow))
+                return _cells[Position.TopLeft];
+
+            if (RowIsFull(secondRow) && RowIsSamePlayer(secondRow))
+                return _cells[Position.MidLeft];
+
+            if (RowIsFull(thirdRow) && RowIsSamePlayer(thirdRow))
+                return _cells[Position.BottomLeft];
+
             return null;
         }
+
+        private bool RowIsSamePlayer(IReadOnlyList<Position> rowPositions) =>
+            _cells[rowPositions[0]] == _cells[rowPositions[1]] &&
+            _cells[rowPositions[1]] == _cells[rowPositions[2]];
+
+        private bool RowIsFull(IReadOnlyList<Position> rowPositions) =>
+            _cells.ContainsKey(rowPositions[0]) && _cells.ContainsKey(rowPositions[1]) && _cells.ContainsKey(rowPositions[2]);
     }
 
-    public class Position
+    public enum Position
     {
-        public int X;
-        public int Y;
+        TopLeft,
+        TopCenter,
+        TopRight,
 
-        public Position(int x, int y)
-        {
-            X = x;
-            Y = y;
-        }
+        MidLeft,
+        MidCenter,
+        MidRight,
+
+        BottomLeft,
+        BottomCenter,
+        BottomRight
     }
 
     public enum Player
