@@ -104,6 +104,22 @@ namespace TicTacToe
 
             game.Winner.Should().Be(Player.X);
         }
+
+        [Test]
+        public void Declare_a_winner_if_second_column_is_full_with_the_same_player()
+        {
+            var game = new Game();
+            game.Play(Player.X, Position.TopLeft);
+            game.Play(Player.O, Position.TopCenter);
+            game.Play(Player.X, Position.BottomLeft);
+            game.Play(Player.O, Position.BottomCenter);
+            game.Play(Player.X, Position.MidRight);
+
+            game.Play(Player.O, Position.MidCenter);
+
+            game.Winner.Should().Be(Player.O);
+        }
+
     }
 
     public class Game
@@ -138,6 +154,7 @@ namespace TicTacToe
         private readonly Position[] thirdRow = { Position.BottomLeft, Position.BottomCenter, Position.BottomRight };
 
         private readonly Position[] firstColumn = { Position.TopLeft, Position.MidLeft, Position.BottomLeft };
+        private readonly Position[] secondColumn = { Position.TopCenter, Position.MidCenter, Position.BottomCenter };
 
         public void SetPosition(Player player, Position position)
         {
@@ -161,6 +178,9 @@ namespace TicTacToe
 
             if (LineIsFull(firstColumn) && LineIsSamePlayer(firstColumn))
                 return _cells[Position.TopLeft];
+
+            if (LineIsFull(secondColumn) && LineIsSamePlayer(secondColumn))
+                return _cells[Position.TopCenter];
 
             return null;
         }
