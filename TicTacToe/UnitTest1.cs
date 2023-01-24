@@ -17,19 +17,19 @@ namespace TicTacToe
 
             var play = () => game.Play('O');
 
-            play.Should().Throw<WrongTurn>();
+            play.Should().Throw<WrongTurnException>();
         }
     }
 
     public class Game
     {
-        public void Play(char c)
+        public void Play(char player)
         {
-            throw new NotImplementedException();
+            throw new WrongTurnException();
         }
     }
 
-    public class WrongTurn : Exception
+    public class WrongTurnException : Exception
     {
     }
 }
