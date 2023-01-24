@@ -217,6 +217,8 @@ namespace TicTacToe
             Position[] secondColumn = { Position.TopCenter, Position.MidCenter, Position.BottomCenter };
             Position[] thirdColumn = { Position.TopRight, Position.MidRight, Position.BottomRight };
 
+            Position[] firstDiagonal = { Position.TopLeft, Position.MidCenter, Position.BottomRight };
+
             return new List<Position[]>
             {
                 firstRow,
@@ -224,7 +226,8 @@ namespace TicTacToe
                 thirdRow,
                 firstColumn,
                 secondColumn,
-                thirdColumn
+                thirdColumn,
+                firstDiagonal
             };
         }
     }
