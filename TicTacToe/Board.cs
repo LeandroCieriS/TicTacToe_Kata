@@ -3,7 +3,7 @@ namespace TicTacToe;
 internal class Board
 {
     private readonly Dictionary<Position, Player> _cells = new();
-    private readonly List<Position[]> _viableTicTacToes = InitializeBoard();
+    private readonly List<Position[]> _viableTicTacToes = GetViableTicTacToes();
 
     public void SetPosition(Player player, Position position)
     {
@@ -40,7 +40,7 @@ internal class Board
         return _cells.Count == 9;
     }
 
-    private static List<Position[]> InitializeBoard()
+    private static List<Position[]> GetViableTicTacToes()
     {
         Position[] firstRow = { Position.TopLeft, Position.TopCenter, Position.TopRight };
         Position[] secondRow = { Position.MidLeft, Position.MidCenter, Position.MidRight };

@@ -199,4 +199,19 @@ public class TicTacToeShould
 
         play.Should().Throw<GameIsOverException>();
     }
+
+    [Test]
+    public void Not_let_play_if_there_is_a_winner()
+    {
+        var game = new Game();
+        game.Play(Player.X, Position.TopRight);
+        game.Play(Player.O, Position.TopLeft);
+        game.Play(Player.X, Position.MidCenter);
+        game.Play(Player.O, Position.BottomRight);
+        game.Play(Player.X, Position.BottomLeft);
+
+        var play = () => game.Play(Player.O, Position.TopCenter);
+
+        play.Should().Throw<GameIsOverException>();
+    }
 }
