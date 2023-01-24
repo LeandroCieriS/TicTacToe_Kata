@@ -135,6 +135,8 @@ namespace TicTacToe
                 return _cells[0, 0];
             if (_cells[1, 0] == _cells[1, 1] && _cells[1, 1] == _cells[1, 2])
                 return _cells[1, 0];
+            if (_cells[2, 0] == _cells[2, 1] && _cells[2, 1] == _cells[2, 2])
+                return _cells[2, 0];
             return null;
         }
     }
