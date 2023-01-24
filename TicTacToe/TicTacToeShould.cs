@@ -70,8 +70,22 @@ namespace TicTacToe
             game.Play(Player.O, new Position(1, 1));
             game.Play(Player.X, new Position(2, 2));
 
-
             game.Play(Player.O, new Position(1, 2));
+
+            game.CheckWinner().Should().Be(Player.O);
+        }
+
+        [Test]
+        public void Declare_a_winner_if_third_row_is_full_with_the_same_player()
+        {
+            var game = new Game();
+            game.Play(Player.X, new Position(0, 0));
+            game.Play(Player.O, new Position(2, 0));
+            game.Play(Player.X, new Position(0, 1));
+            game.Play(Player.O, new Position(2, 1));
+            game.Play(Player.X, new Position(1, 2));
+
+            game.Play(Player.O, new Position(2, 2));
 
             game.CheckWinner().Should().Be(Player.O);
         }
